@@ -1,11 +1,15 @@
 import { Field } from "./Field";
 
 interface ContainerProps {
-  data: object;
+  data: object | string;
   parentKeys?: string[];
 }
 
 export const Container = ({ data, parentKeys = [] }: ContainerProps) => {
+  if (typeof data !== "object") {
+    return <Field parentKeys={parentKeys} value={data as string} />;
+  }
+
   return (
     <>
       {Object.entries(data).map(([key, value]) => {

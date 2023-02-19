@@ -3,11 +3,22 @@ import { useEffect, useState } from "react";
 import { Container } from "../components/Container";
 import { DataContextProvider } from "../components/dataContext";
 
+const getParsedData = (data: Record<string, any>, dataPicker: string[]) => {
+  let current = data;
+  if (Object.keys(data).length > 0) {
+    for (let key of dataPicker) current = current[key];
+  }
+  return current;
+};
+
 interface JsonEditorProps {
   filename: string;
+
+  /** List of keys inside the json file that contain the data you'd like to render */
+  dataPicker?: string[];
 }
 
-export const JsonEditor = ({ filename }: JsonEditorProps) => {
+export const JsonEditor = ({ filename, dataPicker = [] }: JsonEditorProps) => {
   const [data, setData] = useState<Record<string, any>>({});
 
   useEffect(() => {
@@ -15,10 +26,8 @@ export const JsonEditor = ({ filename }: JsonEditorProps) => {
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((response) => {
-      response.json().then((json) => setData(json.data));
-    });
-  }, [filename]);
+    }).then((response) => response.json().then((json) => setData(json.data)));
+  }, [filename, dataPicker]);
 
   const updateField = (keys: string[], value: unknown) => {
     let current = data;
@@ -48,7 +57,10 @@ export const JsonEditor = ({ filename }: JsonEditorProps) => {
 
   return (
     <DataContextProvider value={{ data, updateField }}>
-      <Container data={data} />
+      <Container
+        data={getParsedData(data, dataPicker)}
+        parentKeys={dataPicker}
+      />
     </DataContextProvider>
   );
 };
