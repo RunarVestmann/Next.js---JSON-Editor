@@ -4,11 +4,19 @@ import { Container } from "../components/Container";
 import { DataContextProvider } from "../components/dataContext";
 
 const getParsedData = (data: Record<string, any>, dataPicker: string[]) => {
+  if (dataPicker.length === 0) return data;
   let current = data;
   if (Object.keys(data).length > 0) {
     for (let key of dataPicker) current = current[key];
   }
+  current = { [dataPicker[dataPicker.length - 1]]: current };
   return current;
+};
+
+const getParsedParentKeys = (dataPicker: string[]) => {
+  const parsedDataPicker = [...dataPicker];
+  parsedDataPicker.pop();
+  return parsedDataPicker;
 };
 
 interface JsonEditorProps {
@@ -59,7 +67,7 @@ export const JsonEditor = ({ filename, dataPicker = [] }: JsonEditorProps) => {
     <DataContextProvider value={{ data, updateField }}>
       <Container
         data={getParsedData(data, dataPicker)}
-        parentKeys={dataPicker}
+        parentKeys={getParsedParentKeys(dataPicker)}
       />
     </DataContextProvider>
   );
