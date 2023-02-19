@@ -1,3 +1,4 @@
+import { isRunningLocally } from "@/constants";
 import { useEffect, useState } from "react";
 import { Container } from "../components/Container";
 import { DataContextProvider } from "../components/dataContext";
@@ -29,6 +30,10 @@ export const JsonEditor = ({ filename }: JsonEditorProps) => {
 
     current[keys[keys.length - 1]] = value;
 
+    setData({ ...data });
+
+    if (!isRunningLocally) return;
+
     fetch("/api/update-file", {
       body: JSON.stringify({
         data,
@@ -39,8 +44,6 @@ export const JsonEditor = ({ filename }: JsonEditorProps) => {
         "Content-Type": "application/json",
       },
     });
-
-    setData({ ...data });
   };
 
   return (

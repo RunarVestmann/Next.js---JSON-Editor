@@ -1,3 +1,4 @@
+import { isRunningLocally } from "@/constants";
 import { useDataContext } from "./dataContext";
 
 interface FieldProps {
@@ -14,6 +15,7 @@ export const Field = ({ parentKeys, value }: FieldProps) => {
       type="text"
       value={value}
       onChange={(ev) => updateField(parentKeys, ev.target.value)}
+      disabled={!isRunningLocally}
     />
   );
 };
