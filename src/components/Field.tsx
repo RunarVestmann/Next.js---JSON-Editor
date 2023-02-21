@@ -3,7 +3,7 @@ import { useDataContext } from "./dataContext";
 
 interface FieldProps {
   parentKeys: string[];
-  value: string | number;
+  value: string;
 }
 
 export const Field = ({ parentKeys, value }: FieldProps) => {
@@ -12,11 +12,10 @@ export const Field = ({ parentKeys, value }: FieldProps) => {
   return (
     <div
       className={parentKeys[parentKeys.length - 1]}
-      onInput={(ev) => updateField(parentKeys, ev.currentTarget.textContent)}
+      onInput={(ev) => updateField(parentKeys, ev.currentTarget.innerHTML)}
       contentEditable={isRunningLocally}
       suppressContentEditableWarning={true}
-    >
-      {value}
-    </div>
+      dangerouslySetInnerHTML={{ __html: value }}
+    />
   );
 };
