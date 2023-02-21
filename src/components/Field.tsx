@@ -10,12 +10,13 @@ export const Field = ({ parentKeys, value }: FieldProps) => {
   const { updateField } = useDataContext();
 
   return (
-    <input
+    <div
       className={parentKeys[parentKeys.length - 1]}
-      type="text"
-      value={value}
-      onChange={(ev) => updateField(parentKeys, ev.target.value)}
-      disabled={!isRunningLocally}
-    />
+      onInput={(ev) => updateField(parentKeys, ev.currentTarget.textContent)}
+      contentEditable={isRunningLocally}
+      suppressContentEditableWarning={true}
+    >
+      {value}
+    </div>
   );
 };

@@ -1,5 +1,5 @@
 import { isRunningLocally } from "@/constants";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Container } from "../components/Container";
 import { DataContextProvider } from "../components/dataContext";
 
@@ -28,17 +28,23 @@ interface JsonEditorProps {
 
 export const JsonEditor = ({ filename, dataPicker = [] }: JsonEditorProps) => {
   const [data, setData] = useState<Record<string, any>>({});
-
+  const dataRef = useRef<Record<string, any>>({});
   useEffect(() => {
     fetch("/api/get-file?filename=" + filename, {
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((response) => response.json().then((json) => setData(json.data)));
-  }, [filename, dataPicker]);
+    }).then((response) =>
+      response.json().then((json) => {
+        setData(json.data);
+        dataRef.current = json.data;
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filename, dataPicker.join(" ")]);
 
   const updateField = (keys: string[], value: unknown) => {
-    let current = data;
+    let current = dataRef.current;
 
     for (let i = 0; i < keys.length - 1; i += 1) {
       const key = keys[i];
@@ -47,7 +53,7 @@ export const JsonEditor = ({ filename, dataPicker = [] }: JsonEditorProps) => {
 
     current[keys[keys.length - 1]] = value;
 
-    setData({ ...data });
+    dataRef.current = { ...data };
 
     if (!isRunningLocally) return;
 
